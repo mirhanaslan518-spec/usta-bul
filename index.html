@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="tr">
+<!--
+  ====================================================================
+  USTABUL — index.html
+  Sprint 2 · Üç dosyalı yapı: index.html / style.css / app.js
+  ====================================================================
+-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UstaBul – Güvenilir Usta Bul, İşini Hallettir</title>
+<meta name="description" content="UstaBul: Güvenilir usta bul, hizmet al, toptan ürün satın al." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Sprint bilgi çubuğu (prodüksiyonda kaldırılır) -->
+<div class="sprint-bar">
+  🚧 <strong>Sprint 2 Prototipi</strong> — Veriler tarayıcı belleğinde saklanır (localStorage). Gerçek prodüksiyon için backend gerekir.
+</div>
+
+<!-- ================================================================
+     HEADER / NAVİGASYON
+     ================================================================ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="#" onclick="showView('home');return false;">
+      <span class="logo-icon">🔨</span>
+      <span class="logo-text">Usta<span>Bul</span></span>
+    </a>
+    <nav class="site-nav">
+      <button class="nav-btn active" data-view="home"      onclick="showView('home')">Anasayfa</button>
+      <button class="nav-btn"        data-view="browse"    onclick="showView('browse')">İş İlanları</button>
+      <button class="nav-btn"        data-view="wholesale" onclick="showView('wholesale')">Toptan Alım</button>
+    </nav>
+    <div class="nav-auth" id="auth-area"><!-- JS --></div>
+  </div>
+</header>
+
+<!-- ================================================================
+     ANA İÇERİK
+     ================================================================ -->
+<main>
+
+<!-- ============================================================
+     GÖRÜNÜM: ANASAYFA
+     Sıralama: Hero → Kategoriler → Toptan Alım → Son İlanlar → Nasıl Çalışır
+     ============================================================ -->
+<section id="view-home" class="view active">
+
+  <!-- Hero — çini kafes desenli (Sprint 1 tekniği, büyütülmüş ve yeşil) -->
+  <div class="hero">
+    <div class="container">
+      <div class="hero-layout">
+        <!-- Left: copy & CTAs -->
+        <div class="hero-content">
+          <h1>Güvenilir Usta Bul,<br><span class="hero-accent">İşini Hallettir</span></h1>
+          <p class="hero-sub">Boyacı, tesisatçı, elektrikçi ve daha fazlası. Tekliflerini karşılaştır, en iyisini seç — güvenle.</p>
+          <div class="hero-btns">
+            <button class="btn btn-terra btn-lg" onclick="requireLogin('post-job')">+ İlan Ver</button>
+            <button class="btn btn-white btn-lg" onclick="showView('browse')">İş Ara</button>
+          </div>
+          <div class="hero-trust">
+            <span class="trust-chip">🔒 Güvenli Ödeme</span>
+            <span class="trust-chip">⭐ Puanlı Ustalar</span>
+            <span class="trust-chip">📍 Türkiye Geneli</span>
+          </div>
+        </div>
+        <!-- Right: real, clickable preview cards — populated by renderHeroPreview() in app.js -->
+        <div class="hero-visual" id="hero-visual"><!-- JS doldurur --></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kategoriler -->
+  <div class="section">
+    <div class="container">
+      <div class="sec-eyebrow">Kategoriler</div>
+      <h2 class="sec-title">Ne Arıyorsun?</h2>
+      <p class="sec-sub">Her kategori kendi rengiyle — ihtiyacını hızla bul.</p>
+      <div class="cats-grid" id="home-cats"></div>
+    </div>
+  </div>
+
+  <!-- Toptan Alım -->
+  <div class="section section-mist">
+    <div class="container">
+      <div class="sec-eyebrow">Toplu Sipariş</div>
+      <h2 class="sec-title">Toptan Alım</h2>
+      <p class="sec-sub">Hazır ürünlere göz at, ya da aradığını bulamazsan talep oluştur — satıcılar sana teklif versin.</p>
+      <div class="toptan-grid mb6" id="home-prods"></div>
+      <div class="row" style="justify-content:center;">
+        <button class="btn btn-primary btn-lg" onclick="showView('wholesale')">Tüm Ürünleri Gör</button>
+        <button class="btn btn-terra btn-lg" onclick="requireLogin('post-wholesale')">+ Aradığım Ürünü Bulamadım, Talep Oluştur</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Son İlanlar -->
+  <div class="section">
+    <div class="container">
+      <div class="row-between mb6">
+        <div>
+          <div class="sec-eyebrow">Güncel</div>
+          <h2 class="sec-title" style="margin-bottom:4px;">Son İlanlar</h2>
+        </div>
+        <button class="btn btn-outline" onclick="showView('browse')">Tüm İlanlar →</button>
+      </div>
+      <div class="jobs-grid" id="home-jobs"></div>
+    </div>
+  </div>
+
+  <!-- Nasıl Çalışır -->
+  <div class="section section-white">
+    <div class="container">
+      <div class="sec-eyebrow tc" style="justify-content:center;">Süreç</div>
+      <h2 class="sec-title tc">Nasıl Çalışır?</h2>
+      <p class="sec-sub tc">Adım adım, güvenli ve basit.</p>
+      <div class="how-grid">
+        <div class="how-step">
+          <div class="how-num-ghost">1</div>
+          <div class="how-icon-wrap">📋</div>
+          <h3>İlan Oluştur</h3>
+          <p>Kategori seç, işi anlat. Kimliğin teklif kabul edilene kadar gizli kalır.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-num-ghost">2</div>
+          <div class="how-icon-wrap">📩</div>
+          <h3>Teklifler Al</h3>
+          <p>Ustalar fiyat teklifi gönderir, e-posta ile anında haberdar olursun.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-num-ghost">3</div>
+          <div class="how-icon-wrap">⭐</div>
+          <h3>Usta Seç</h3>
+          <p>Puan ve yorumları incele; en güvenilirini kabul et.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-num-ghost">4</div>
+          <div class="how-icon-wrap">✅</div>
+          <h3>İş Bitince Öde</h3>
+          <p>Ödeme iş tamamlandıktan sonra yapılır. Kimlikler bu noktada açılır.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: İLAN LİSTESİ (BROWSE)
+     ============================================================ -->
+<section id="view-browse" class="view">
+  <div class="browse-bar">
+    <div class="container">
+      <h1 class="pg-title mb4">İş İlanları</h1>
+      <div class="filter-row">
+        <select class="fctrl fsel" id="f-cat"  onchange="applyFilters()"><option value="">Tüm Kategoriler</option></select>
+        <select class="fctrl fsel" id="f-city" onchange="applyFilters()"><option value="">Tüm Şehirler</option></select>
+        <select class="fctrl fsel" id="f-sub"  onchange="applyFilters()"><option value="">Tüm Alt Kategoriler</option></select>
+        <button class="btn btn-ghost btn-sm" onclick="resetFilters()">Temizle</button>
+      </div>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:60px;">
+    <div class="jobs-grid" id="browse-grid"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: İLAN DETAY
+     ============================================================ -->
+<section id="view-job-detail" class="view">
+  <div class="pg-head">
+    <div class="container">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="showView('home')">Anasayfa</span> ›
+        <span class="bc-link" onclick="showView('browse')">İlanlar</span> ›
+        <span id="jd-breadcrumb">Detay</span>
+      </div>
+      <h1 class="pg-title" id="jd-title">İlan</h1>
+      <div id="jd-badges" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:60px;">
+    <div class="jd-layout">
+      <!-- Sol -->
+      <div>
+        <div class="card mb6">
+          <div class="card-body">
+            <!-- Düzenleme onayı bekleyen ilan bandı — Sprint 5 -->
+            <div id="jd-review-banner" class="review-banner hidden">
+              <span class="rb-icon">🕐</span>
+              <div>
+                <div class="rb-title">İncelemede</div>
+                <div class="rb-text">Bu ilan üzerinde yaptığınız değişiklikler onay bekliyor. Onaylanana kadar yalnızca siz görebilirsiniz.</div>
+                <button class="btn btn-outline btn-sm mt4" onclick="simulateApproveJob(S.jobId)">🔎 İncelemeyi Simüle Et → Onayla</button>
+              </div>
+            </div>
+            <!-- İşaretlenmiş gönderi bandı — Sprint 7. İlan sahibine görünür (kendi kendine düzeltme fırsatı). -->
+            <div id="jd-flag-banner" class="flag-banner hidden">
+              <span class="rb-icon">🔍</span>
+              <div>
+                <div class="rb-title">İnceleme Altında</div>
+                <div class="rb-text">Bu ilan, kişisel bilgi paylaşımı ihtimaline karşı otomatik/manuel olarak işaretlendi ve moderasyon ekibi tarafından gözden geçiriliyor. İlan yayında kalmaya devam eder.</div>
+                <div id="jd-flag-reasons" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"></div>
+              </div>
+            </div>
+            <!-- Yönetici Görünümü — Sprint 8. Sadece isAdmin görür, gerçek kimliği her zaman gösterir. -->
+            <div id="jd-admin-panel" class="admin-view-box hidden">
+              <div class="avb-head">🔐 Yönetici Görünümü <span class="avb-note">(bu görüntüleme denetim kaydına işlenir)</span></div>
+              <table class="sum-table">
+                <tr><td>Gerçek Ad</td><td id="jd-admin-name">—</td></tr>
+                <tr><td>E-posta</td><td id="jd-admin-email">—</td></tr>
+                <tr><td>Tam Adres</td><td id="jd-admin-addr">—</td></tr>
+              </table>
+              <button class="btn btn-dark btn-sm mt4" id="jd-admin-hide-btn" onclick="toggleAdminHide('job', S.jobId)"></button>
+            </div>
+            <div class="priv-box">
+              <span class="priv-icon">🔒</span>
+              <div><strong>Gizlilik Koruması:</strong> İlan sahibinin gerçek kimliği ve tam adresi, teklif kabul edilene kadar gizlidir. Şu an yalnızca <span id="jd-anon-owner" style="font-weight:800;">—</span> rumuzu görünür.</div>
+            </div>
+            <h3 style="font-size:var(--fs-lg);font-weight:700;margin-bottom:14px;">İş Açıklaması</h3>
+            <p id="jd-desc" style="font-size:var(--fs-md);line-height:1.75;color:var(--dark-2);"></p>
+
+            <div id="jd-checklist-wrap" class="hidden">
+              <hr class="divider">
+              <h3 style="font-size:var(--fs-lg);font-weight:700;margin-bottom:12px;">İstenen Ek Hizmetler</h3>
+              <div id="jd-checklist" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+            </div>
+
+            <!-- Fotoğraf isteği / galeri — Sprint 5: usta talep eder, ilan sahibi yükler -->
+            <div id="jd-photos-wrap" class="hidden">
+              <hr class="divider">
+              <h3 style="font-size:var(--fs-lg);font-weight:700;margin-bottom:12px;">📷 Oda Fotoğrafları</h3>
+              <div id="jd-photos-gallery" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;"></div>
+              <!-- Sadece ilan sahibi, talep varsa görür: yükleme kutusu -->
+              <div id="jd-photo-upload-wrap" class="hidden">
+                <p class="fhint mb4">Bir usta oda fotoğrafı istedi. Not: bu bir prototiptir — gerçek sitede görseller
+                  sunucuda saklanır ve uygunsuz içerik denetiminden geçer; burada yalnızca arayüz gösterilmektedir.</p>
+                <div class="img-upload-box" onclick="document.getElementById('jd-photo-input').click()">
+                  <div class="iu-icon">📷</div>
+                  <div class="iu-text">Fotoğraf eklemek için tıklayın</div>
+                  <div class="iu-hint">JPG, PNG — birden fazla fotoğraf ekleyebilirsiniz</div>
+                </div>
+                <input type="file" id="jd-photo-input" accept="image/*" multiple class="hidden" onchange="handleJobPhotoUpload(event)" />
+              </div>
+            </div>
+
+            <hr class="divider">
+            <table class="sum-table">
+              <tr><td>📍 Konum</td><td id="jd-loc">—</td></tr>
+              <tr><td>📂 Kategori</td><td id="jd-cat">—</td></tr>
+              <tr><td>🔖 Alt Kategori</td><td id="jd-subcat">—</td></tr>
+              <tr><td>🗓 Uygunluk</td><td id="jd-availability">—</td></tr>
+              <tr><td>👤 İlan Sahibi</td><td id="jd-owner">—</td></tr>
+              <tr><td>📅 Tarih</td><td id="jd-date">—</td></tr>
+            </table>
+          </div>
+        </div>
+        <!-- Teklifler -->
+        <div class="card">
+          <div class="card-head">
+            <div class="row-between">
+              <h3 style="font-size:var(--fs-lg);font-weight:700;">Teklifler</h3>
+              <span class="badge badge-sage" id="jd-offer-cnt">0 teklif</span>
+            </div>
+          </div>
+          <div class="card-body" id="jd-offers"></div>
+        </div>
+      </div>
+      <!-- Sağ -->
+      <div>
+        <div class="card" style="position:sticky;top:72px;">
+          <div class="card-body" id="jd-action"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: İLAN VER (POST-JOB)
+     ============================================================ -->
+<section id="view-post-job" class="view">
+  <div class="pg-head">
+    <div class="container">
+      <h1 class="pg-title">Yeni İş İlanı</h1>
+      <p class="pg-sub">Adım adım ilerleyerek ilanınızı oluşturun. Kişisel bilgileriniz korunur.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="post-wrap">
+
+      <!-- Adım göstergesi -->
+      <div class="steps-row" id="steps-row">
+        <div class="step-dot on" id="sd1"><div class="step-circle">1</div><div class="step-label">Kategori</div></div>
+        <div class="step-line" id="sl1"></div>
+        <div class="step-dot" id="sd2"><div class="step-circle">2</div><div class="step-label">Açıklama</div></div>
+        <div class="step-line" id="sl2"></div>
+        <div class="step-dot" id="sd3"><div class="step-circle">3</div><div class="step-label">Konum</div></div>
+        <div class="step-line" id="sl3"></div>
+        <div class="step-dot" id="sd4"><div class="step-circle">4</div><div class="step-label">Özet</div></div>
+      </div>
+
+      <!-- ADIM 1: Kategori -->
+      <div id="ps1" class="card">
+        <div class="card-head"><h2 style="font-size:var(--fs-xl);font-weight:800;">1. Kategori Seç</h2>
+          <p style="color:var(--muted);margin-top:6px;">Hangi tür iş için usta arıyorsunuz?</p></div>
+        <div class="card-body">
+          <div class="pcat-grid" id="pcat-grid"></div>
+          <div id="psubcat-area" class="hidden">
+            <hr class="divider">
+            <div class="fgrp"><label class="flabel">Alt Kategori</label>
+              <div class="pcat-grid" id="psubcat-grid"></div></div>
+          </div>
+        </div>
+        <div class="card-foot" style="display:flex;justify-content:flex-end;">
+          <button class="btn btn-primary btn-lg" id="ps1-next" onclick="goStep(2)" disabled>Devam Et →</button>
+        </div>
+      </div>
+
+      <!-- ADIM 2: Açıklama + Kontrol Listesi -->
+      <div id="ps2" class="card hidden">
+        <div class="card-head"><h2 style="font-size:var(--fs-xl);font-weight:800;">2. İşi Anlat</h2>
+          <p style="color:var(--muted);margin-top:6px;">Ne yapılmasını istediğinizi detaylıca yazın.</p></div>
+        <div class="card-body">
+          <div class="fgrp">
+            <label class="flabel" for="p-title">İlan Başlığı</label>
+            <p class="fhint">Kısa ve açıklayıcı (Örn: "Salon duvarı boyatmak istiyorum")</p>
+            <input type="text" class="fctrl" id="p-title" placeholder="İlan başlığı..." maxlength="100" />
+          </div>
+          <div class="fgrp">
+            <label class="flabel" for="p-desc">İş Açıklaması</label>
+            <p class="fhint">Metraj, malzeme tercihi, özel istekler — ne kadar detay o kadar iyi teklif.</p>
+            <textarea class="fctrl" id="p-desc" rows="5" placeholder="Örn: 50 m² salon ve 30 m² yatak odasını boyatmak istiyorum. Yüksek kaliteli mat boya, astar dahil..."></textarea>
+          </div>
+          <div class="fgrp" id="p-checklist-wrap">
+            <label class="flabel">Ek Hizmetler <span style="font-weight:400;color:var(--muted);">(İsteğe Bağlı)</span></label>
+            <p class="fhint">İlgili olanları işaretleyin — teklif veren ustalar daha net fiyat verebilir.</p>
+            <div class="checklist-grid" id="p-checklist"></div>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Ne Zaman Uygunsunuz?</label>
+            <p class="fhint">Ustalar teklif verirken bu bilgiyi görür.</p>
+            <select class="fctrl" id="p-avail-type" onchange="toggleAvailabilityFields()">
+              <option value="flexible">Esnek — herhangi bir zaman uyar</option>
+              <option value="weekday">Hafta İçi</option>
+              <option value="weekend">Hafta Sonu</option>
+              <option value="specific">Belirli Bir Tarih ve Saat</option>
+            </select>
+            <div id="p-avail-specific" class="hidden mt4">
+              <div class="two-col">
+                <div class="fgrp">
+                  <label class="flabel" for="p-avail-date">Tarih</label>
+                  <input type="date" class="fctrl" id="p-avail-date" />
+                </div>
+                <div class="fgrp" style="margin-bottom:0;">
+                  <label class="flabel">Saat Aralığı</label>
+                  <div class="row" style="gap:10px;">
+                    <input type="time" class="fctrl" id="p-avail-from" value="09:00" />
+                    <span style="color:var(--muted);">–</span>
+                    <input type="time" class="fctrl" id="p-avail-to" value="17:00" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="fgrp">
+            <label class="flabel" for="p-budget">Bütçe (İsteğe Bağlı)</label>
+            <input type="text" class="fctrl" id="p-budget" placeholder="Örn: 5.000 – 8.000 TL" />
+          </div>
+        </div>
+        <div class="card-foot" style="display:flex;justify-content:space-between;">
+          <button class="btn btn-ghost" onclick="goStep(1)">← Geri</button>
+          <button class="btn btn-primary btn-lg" onclick="goStep(3)">Devam Et →</button>
+        </div>
+      </div>
+
+      <!-- ADIM 3: Konum -->
+      <div id="ps3" class="card hidden">
+        <div class="card-head"><h2 style="font-size:var(--fs-xl);font-weight:800;">3. Konum Bilgisi</h2>
+          <p style="color:var(--muted);margin-top:6px;">Sadece şehir ve ilçe ustalarla paylaşılır. Tam adresiniz gizli kalır.</p></div>
+        <div class="card-body">
+          <div class="priv-box mt4">
+            <span class="priv-icon">🔒</span>
+            <div>Tam adresiniz ve gerçek adınız teklif kabul edilene kadar kimseye gösterilmez. Rumuzunuz: <strong id="p-anon-preview">—</strong></div>
+          </div>
+
+          <!-- Kayıtlı adres seçici — kayıtlı adres varsa gösterilir -->
+          <div id="p-addr-picker" class="fgrp"></div>
+
+          <!-- Manuel adres girişi — "Yeni adres" seçilince veya kayıtlı adres yoksa görünür -->
+          <div id="p-addr-manual">
+            <div class="two-col mt4">
+              <div class="fgrp">
+                <label class="flabel" for="p-city">Şehir</label>
+                <select class="fctrl" id="p-city" onchange="fillDistricts('p-city','p-dist')">
+                  <option value="">Şehir Seçin</option>
+                </select>
+              </div>
+              <div class="fgrp">
+                <label class="flabel" for="p-dist">İlçe</label>
+                <select class="fctrl" id="p-dist" disabled><option value="">Önce şehir seçin</option></select>
+              </div>
+            </div>
+            <div class="fgrp">
+              <label class="flabel" for="p-addr">Tam Adres (Gizli)</label>
+              <p class="fhint">Bu bilgi yalnızca teklif kabul edildikten sonra ustaya iletilir.</p>
+              <textarea class="fctrl" id="p-addr" rows="2" placeholder="Mahalle, sokak, kapı no..." style="min-height:80px;"></textarea>
+            </div>
+            <label class="check-item" id="p-save-addr-wrap" style="margin-bottom:var(--s5);">
+              <input type="checkbox" id="p-save-addr" onchange="document.getElementById('p-save-addr-label-wrap').classList.toggle('hidden', !this.checked)" />
+              <span>Bu adresi profilime kaydet, sonra tekrar seçeyim</span>
+            </label>
+            <div class="fgrp hidden" id="p-save-addr-label-wrap">
+              <label class="flabel" for="p-save-addr-label">Adres Etiketi</label>
+              <input type="text" class="fctrl" id="p-save-addr-label" placeholder="Örn: Ev, İş" />
+            </div>
+          </div>
+        </div>
+        <div class="card-foot" style="display:flex;justify-content:space-between;">
+          <button class="btn btn-ghost" onclick="goStep(2)">← Geri</button>
+          <button class="btn btn-primary btn-lg" onclick="goStep(4)">Özeti Gör →</button>
+        </div>
+      </div>
+
+      <!-- ADIM 4: Özet -->
+      <div id="ps4" class="card hidden">
+        <div class="card-head"><h2 id="ps4-title" style="font-size:var(--fs-xl);font-weight:800;">4. İlanı Onayla</h2>
+          <p style="color:var(--muted);margin-top:6px;">Bilgileri kontrol edin ve yayınlayın.</p></div>
+        <div class="card-body">
+          <div id="p-summary" class="sum-box"></div>
+          <div class="info-box" id="ps4-info-box">
+            <p style="color:var(--green-dk);font-size:var(--fs-base);">
+              <strong>📌</strong> İlanınız yayınlandığında bulunduğunuz şehirdeki ustalar e-posta ile bilgilendirilecek. İlanda rumuzunuz <strong id="p-anon-preview2">—</strong> görünecek.
+            </p>
+          </div>
+        </div>
+        <div class="card-foot" style="display:flex;justify-content:space-between;">
+          <button class="btn btn-ghost" onclick="goStep(3)">← Geri</button>
+          <button class="btn btn-terra btn-lg" id="ps4-submit-btn" onclick="submitJob()">✓ İlanı Yayınla</button>
+        </div>
+      </div>
+
+      <!-- BAŞARI -->
+      <div id="ps-ok" class="hidden tc" style="padding:var(--s12) 0;">
+        <div id="ps-ok-icon" style="font-size:76px;margin-bottom:var(--s5);">🎉</div>
+        <h2 id="ps-ok-title" style="font-size:var(--fs-2xl);font-weight:800;margin-bottom:var(--s3);">İlanınız Yayınlandı!</h2>
+        <p id="ps-ok-sub" style="font-size:var(--fs-lg);color:var(--muted);margin-bottom:var(--s8);">Bölgenizdeki ustalar e-posta ile haberdar edildi. Teklif gelince sizi bilgilendireceğiz.</p>
+        <div class="email-sim" style="max-width:480px;margin:0 auto var(--s6);">
+          <div class="email-sim-title" id="ps-ok-email-title">📧 E-posta gönderildi (simülasyon)</div>
+          <div id="p-email-sim"></div>
+        </div>
+        <div style="display:flex;gap:var(--s4);justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="showView('dashboard-user')">İlanlarımı Gör</button>
+          <button class="btn btn-ghost"   onclick="showView('home')">Anasayfaya Dön</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div style="padding:40px 0;"></div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: TOPTAN ALIM (Ürünler + Talepler sekmeleri)
+     ============================================================ -->
+<section id="view-wholesale" class="view">
+  <div class="pg-head">
+    <div class="container">
+      <h1 class="pg-title">🏭 Toptan Alım</h1>
+      <p class="pg-sub">Hazır ürünlere göz atın, ya da aradığınızı bulamazsanız talep oluşturun.</p>
+      <div class="auth-tabs mt4" style="border-bottom:2.5px solid rgba(44,36,22,.12);max-width:420px;">
+        <button class="atab on" id="wtab-prod" onclick="wholesaleTab('prod')">Hazır Ürünler</button>
+        <button class="atab"    id="wtab-dem"  onclick="wholesaleTab('dem')">Alım Talepleri</button>
+      </div>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:60px;">
+
+    <!-- Hazır Ürünler -->
+    <div id="wpanel-prod">
+      <div style="background:var(--green);background-image:radial-gradient(circle, rgba(232,200,96,.3) 2px, transparent 2px);background-size:24px 24px;color:#fff;border:3px solid var(--dark);border-radius:var(--r-xl);box-shadow:6px 6px 0 rgba(44,36,22,.20);padding:var(--s8);display:flex;align-items:center;justify-content:space-between;gap:var(--s5);flex-wrap:wrap;margin-bottom:var(--s8);">
+        <div>
+          <h2 style="font-size:var(--fs-xl);font-weight:800;margin-bottom:var(--s2);">Aradığınızı Bulamadınız mı?</h2>
+          <p style="opacity:.92;">Ürün ve marka belirtin, satıcılar size teklif versin.</p>
+        </div>
+        <button class="btn btn-white btn-lg" onclick="requireLogin('post-wholesale')">+ Talep Oluştur</button>
+      </div>
+      <h2 class="sec-title mb4">Hazır Ürünler</h2>
+      <div class="toptan-grid" id="wholesale-prods"></div>
+    </div>
+
+    <!-- Alım Talepleri -->
+    <div id="wpanel-dem" class="hidden">
+      <div class="row-between mb6">
+        <p style="color:var(--muted);font-size:var(--fs-md);">Alıcıların oluşturduğu toptan alım talepleri. Satıcıysanız teklif verebilirsiniz.</p>
+        <button class="btn btn-terra" onclick="requireLogin('post-wholesale')">+ Talep Oluştur</button>
+      </div>
+      <div class="toptan-grid" id="wholesale-demands"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: TALEP OLUŞTUR (POST-WHOLESALE) — 5 adımlı
+     ============================================================ -->
+<section id="view-post-wholesale" class="view">
+  <div class="pg-head">
+    <div class="container">
+      <h1 class="pg-title">Toptan Alım Talebi Oluştur</h1>
+      <p class="pg-sub">Ürün ve miktar belirtin, satıcılar size teklif versin.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="post-wrap">
+
+      <div class="steps-row">
+        <div class="step-dot on" id="wsd1"><div class="step-circle">1</div><div class="step-label">Kategori</div></div>
+        <div class="step-line" id="wsl1"></div>
+        <div class="step-dot" id="wsd2"><div class="step-circle">2</div><div class="step-label">Marka</div></div>
+        <div class="step-line" id="wsl2"></div>
+        <div class="step-dot" id="wsd3"><div class="step-circle">3</div><div class="step-label">Miktar</div></div>
+        <div class="step-line" id="wsl3"></div>
+        <div class="step-dot" id="wsd4"><div class="step-circle">4</div><div class="step-label">Teslimat</div></div>
+        <div class="step-line" id="wsl4"></div>
+        <div class="step-dot" id="wsd5"><div class="step-circle">5</div><div class="step-label">Özet</div></div>
+      </div>
+
+      <!-- ADIM 1: Kategori -->
+      <div id="ws1" class="card">
+        <div class="card-head"><h2 style="font-size:var(--fs-xl);font-weight:800;">1. Ürün Kategorisi</h2>
+          <p style="color:var(--muted);margin-top:6px;">Hangi tür malzeme arıyorsunuz?</p></div>
+        <div class="card-body">
+          <div class="pcat-grid" id="wpcat-grid"></div>
+          <div id="wsubcat-area" class="hidden">
+            <hr class="divider">
+            <div class="fgrp"><label class="flabel">Alt Kategori</label>
+              <div class="pcat-grid" id="wsubcat-grid"></div></div>
+          </div>
+        </div>
+        <div class="card-foot" style="display:flex;justify-content:flex-end;">
+          <button class="btn btn-primary btn-lg" id="ws1-next" onclick="wGoStep(2)" disabled>Devam Et →</button>
+        </div>
+      </div>
+
+      <!-- ADIM 2: Marka -->
+      <div id="ws2" class="card hidden">
+        <div class="card-head"><h2 style="font-size:var(--fs-xl);font-weight:800;">2. Marka Seçimi</h2>
+          <p style="color:var(--muted);margin-top:6px;">Belirli bir marka mı arıyorsunuz?</p></div>
+        <div class="card-body">
+          <div class="pcat-grid" id="wbrand-grid"></div>
+          <div id="wbrand-other-wrap" class="fgrp hidden mt4">
+            <label class="flabel" for="w-brand-other">Marka Adı</label>
+            <input type="text" class="fctrl" id="w-brand-other" placeholder="Aradığınız markayı yazın..." />
+          </div>
+        </div>
+        <div class="card-foot" style="display:flex;justify-content:space-between;">
+          <button class="btn btn-ghost" onclick="wGoStep(1)">← Geri</button>
+          <button class="btn btn-primary btn-lg" onclick="wGoStep(3)">Devam Et →</button>
+        </div>
+      </div>
+
+      <!-- ADIM 3: Miktar -->
+      <div id="ws3" class="card hidden">
+        <div class="card-head"><h2 style="font-size:var(--fs-xl);font-weight:800;">3. Miktar</h2>
+          <p style="color:var(--muted);margin-top:6px;">Ne kadar ürün almak istiyorsunuz?</p></div>
+        <div class="card-body">
+          <div class="two-col">
+            <div class="fgrp">
+              <label class="flabel" for="w-qty">Adet / Miktar</label>
+              <input type="number" class="fctrl" id="w-qty" placeholder="Örn: 100" min="1" />
+            </div>
+            <div class="fgrp">
+              <label class="flabel" for="w-unit">Birim</label>
+              <select class="fctrl" id="w-unit">
+                <option value="Adet">Adet</option>
+                <option value="Kutu">Kutu</option>
+                <option value="Teneke">Teneke</option>
+                <option value="Paket">Paket</option>
+                <option value="Çuval">Çuval</option>
+                <option value="m²">m²</option>
+                <option value="Kg">Kg</option>
+                <option value="Ton">Ton</option>
+                <option value="Litre">Litre</option>
+              </select>
+            </div>
+          </div>
+          <div class="fgrp">
+            <label class="flabel" for="w-note">Ek Not (İsteğe Bağlı)</label>
+            <textarea class="fctrl" id="w-note" rows="3" placeholder="Renk, özellik, kullanım amacı gibi ek bilgiler..."></textarea>
+          </div>
+        </div>
+        <div class="card-foot" style="display:flex;justify-content:space-between;">
+          <button class="btn btn-ghost" onclick="wGoStep(2)">← Geri</button>
+          <button class="btn btn-primary btn-lg" onclick="wGoStep(4)">Devam Et →</button>
+        </div>
+      </div>
+
+      <!-- ADIM 4: Teslimat -->
+      <div id="ws4" class="card hidden">
+        <div class="card-head"><h2 style="font-size:var(--fs-xl);font-weight:800;">4. Teslimat Tercihi</h2>
+          <p style="color:var(--muted);margin-top:6px;">Ürün size gönderilsin mi, yoksa kendiniz mi alacaksınız?</p></div>
+        <div class="card-body">
+          <div class="delivery-opts">
+            <div class="del-card" id="wdc-ship" onclick="pickDelivery('ship')">
+              <div class="del-icon">📦</div>
+              <div class="del-name">Adresime Gönderilsin</div>
+              <div class="del-desc">Kargo ücreti satıcı tarafından teklif ile birlikte belirtilir.</div>
+            </div>
+            <div class="del-card" id="wdc-pickup" onclick="pickDelivery('pickup')">
+              <div class="del-icon">🚗</div>
+              <div class="del-name">Kendim Gelip Alacağım</div>
+              <div class="del-desc">Satıcının yanına giderek teslim alırsınız.</div>
+            </div>
+          </div>
+          <div class="priv-box">
+            <span class="priv-icon">🔒</span>
+            <div>Tam adresiniz gizli kalır, yalnızca şehir/ilçe satıcılarla paylaşılır.</div>
+          </div>
+
+          <!-- Şehir/ilçe her zaman toplanır — satıcıların sizi bulması için -->
+          <div class="two-col mt4">
+            <div class="fgrp">
+              <label class="flabel" for="w-city">Şehir</label>
+              <select class="fctrl" id="w-city" onchange="fillDistricts('w-city','w-dist')">
+                <option value="">Şehir Seçin</option>
+              </select>
+            </div>
+            <div class="fgrp">
+              <label class="flabel" for="w-dist">İlçe</label>
+              <select class="fctrl" id="w-dist" disabled><option value="">Önce şehir seçin</option></select>
+            </div>
+          </div>
+
+          <!-- Sadece "Adresime Gönderilsin" seçilince görünür: tam adres seçimi -->
+          <div id="w-ship-fields" class="hidden">
+            <div class="fgrp">
+              <label class="flabel">Tam Adres</label>
+              <p class="fhint">Kargo bu adrese gönderilecek. Kayıtlı bir adresinizi seçebilir ya da yeni adres girebilirsiniz.</p>
+            </div>
+            <!-- Kayıtlı adres seçici -->
+            <div id="w-addr-picker" class="fgrp"></div>
+            <!-- Manuel adres girişi -->
+            <div id="w-addr-manual">
+              <div class="fgrp">
+                <label class="flabel" for="w-addr">Tam Adres (Gizli — Kargo için)</label>
+                <textarea class="fctrl" id="w-addr" rows="2" placeholder="Mahalle, sokak, kapı no..." style="min-height:80px;"></textarea>
+              </div>
+              <label class="check-item" style="margin-bottom:var(--s5);">
+                <input type="checkbox" id="w-save-addr" onchange="document.getElementById('w-save-addr-label-wrap').classList.toggle('hidden', !this.checked)" />
+                <span>Bu adresi profilime kaydet, sonra tekrar seçeyim</span>
+              </label>
+              <div class="fgrp hidden" id="w-save-addr-label-wrap">
+                <label class="flabel" for="w-save-addr-label">Adres Etiketi</label>
+                <input type="text" class="fctrl" id="w-save-addr-label" placeholder="Örn: Ev, İş" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-foot" style="display:flex;justify-content:space-between;">
+          <button class="btn btn-ghost" onclick="wGoStep(3)">← Geri</button>
+          <button class="btn btn-primary btn-lg" onclick="wGoStep(5)">Özeti Gör →</button>
+        </div>
+      </div>
+
+      <!-- ADIM 5: Özet -->
+      <div id="ws5" class="card hidden">
+        <div class="card-head"><h2 style="font-size:var(--fs-xl);font-weight:800;">5. Talebi Onayla</h2>
+          <p style="color:var(--muted);margin-top:6px;">Bilgileri kontrol edin ve yayınlayın.</p></div>
+        <div class="card-body">
+          <div id="w-summary" class="sum-box"></div>
+          <div class="info-box">
+            <p style="color:var(--green-dk);font-size:var(--fs-base);">
+              <strong>📌</strong> Talebiniz yayınlandığında ilgili kategorideki satıcılar e-posta ile bilgilendirilecek.
+            </p>
+          </div>
+        </div>
+        <div class="card-foot" style="display:flex;justify-content:space-between;">
+          <button class="btn btn-ghost" onclick="wGoStep(4)">← Geri</button>
+          <button class="btn btn-terra btn-lg" onclick="submitDemand()">✓ Talebi Yayınla</button>
+        </div>
+      </div>
+
+      <!-- BAŞARI -->
+      <div id="ws-ok" class="hidden tc" style="padding:var(--s12) 0;">
+        <div style="font-size:76px;margin-bottom:var(--s5);">🎉</div>
+        <h2 style="font-size:var(--fs-2xl);font-weight:800;margin-bottom:var(--s3);">Talebiniz Yayınlandı!</h2>
+        <p style="font-size:var(--fs-lg);color:var(--muted);margin-bottom:var(--s8);">İlgili satıcılar e-posta ile haberdar edildi.</p>
+        <div class="email-sim" style="max-width:480px;margin:0 auto var(--s6);">
+          <div class="email-sim-title">📧 E-posta gönderildi (simülasyon)</div>
+          <div id="w-email-sim"></div>
+        </div>
+        <div style="display:flex;gap:var(--s4);justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="showView('wholesale');wholesaleTab('dem')">Talepleri Gör</button>
+          <button class="btn btn-ghost"   onclick="showView('home')">Anasayfaya Dön</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div style="padding:40px 0;"></div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: TALEP DETAY (DEMAND DETAIL)
+     ============================================================ -->
+<section id="view-demand-detail" class="view">
+  <div class="pg-head">
+    <div class="container">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="showView('home')">Anasayfa</span> ›
+        <span class="bc-link" onclick="showView('wholesale');wholesaleTab('dem')">Talepler</span> ›
+        <span>Detay</span>
+      </div>
+      <h1 class="pg-title" id="dd-title">Talep</h1>
+      <div id="dd-badges" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:60px;">
+    <div class="jd-layout">
+      <div>
+        <div class="card mb6">
+          <div class="card-body">
+            <!-- İşaretlenmiş gönderi bandı — Sprint 7 -->
+            <div id="dd-flag-banner" class="flag-banner hidden">
+              <span class="rb-icon">🔍</span>
+              <div>
+                <div class="rb-title">İnceleme Altında</div>
+                <div class="rb-text">Bu talep, kişisel bilgi paylaşımı ihtimaline karşı otomatik/manuel olarak işaretlendi ve moderasyon ekibi tarafından gözden geçiriliyor. Talep yayında kalmaya devam eder.</div>
+                <div id="dd-flag-reasons" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"></div>
+              </div>
+            </div>
+            <!-- Yönetici Görünümü — Sprint 8 -->
+            <div id="dd-admin-panel" class="admin-view-box hidden">
+              <div class="avb-head">🔐 Yönetici Görünümü <span class="avb-note">(bu görüntüleme denetim kaydına işlenir)</span></div>
+              <table class="sum-table">
+                <tr><td>Gerçek Ad</td><td id="dd-admin-name">—</td></tr>
+                <tr><td>E-posta</td><td id="dd-admin-email">—</td></tr>
+                <tr><td>Tam Adres</td><td id="dd-admin-addr">—</td></tr>
+              </table>
+              <button class="btn btn-dark btn-sm mt4" id="dd-admin-hide-btn" onclick="toggleAdminHide('demand', S.demandId)"></button>
+            </div>
+            <div class="priv-box">
+              <span class="priv-icon">🔒</span>
+              <div><strong>Gizlilik Koruması:</strong> Talep sahibinin kimliği teklif kabul edilene kadar gizlidir. Şu an yalnızca <span id="dd-anon-owner" style="font-weight:800;">—</span> rumuzu görünür.</div>
+            </div>
+            <table class="sum-table">
+              <tr><td>📂 Kategori</td><td id="dd-cat">—</td></tr>
+              <tr><td>🔖 Alt Kategori</td><td id="dd-sub">—</td></tr>
+              <tr><td>🏷️ Marka</td><td id="dd-brand">—</td></tr>
+              <tr><td>📦 Miktar</td><td id="dd-amount">—</td></tr>
+              <tr><td>🚚 Teslimat</td><td id="dd-delivery">—</td></tr>
+              <tr><td>📍 Konum</td><td id="dd-loc">—</td></tr>
+              <tr><td>👤 Talep Sahibi</td><td id="dd-owner">—</td></tr>
+              <tr><td>📅 Tarih</td><td id="dd-date">—</td></tr>
+            </table>
+            <div id="dd-note-wrap" class="hidden">
+              <hr class="divider">
+              <h3 style="font-size:var(--fs-lg);font-weight:700;margin-bottom:10px;">Ek Not</h3>
+              <p id="dd-note" style="color:var(--dark-2);"></p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="row-between">
+              <h3 style="font-size:var(--fs-lg);font-weight:700;">Teklifler</h3>
+              <span class="badge badge-sage" id="dd-offer-cnt">0 teklif</span>
+            </div>
+          </div>
+          <div class="card-body" id="dd-offers"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="position:sticky;top:72px;">
+          <div class="card-body" id="dd-action"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: USTA PROFİLİ
+     ============================================================ -->
+<section id="view-worker-profile" class="view">
+  <div class="profile-hero">
+    <div class="container">
+      <div class="breadcrumb" style="color:rgba(255,255,255,.6);margin-bottom:var(--s6);">
+        <span class="bc-link" onclick="showView('browse')" style="color:rgba(255,255,255,.75);">İlanlar</span> › Usta Profili
+      </div>
+      <div class="pav-lg" id="wp-av">S</div>
+      <div class="pname" id="wp-name">Satıcı</div>
+      <div class="pstars" id="wp-stars">★★★★★</div>
+      <div class="pmeta" id="wp-meta"></div>
+      <!-- Yönetici Görünümü — Sprint 8 -->
+      <div class="trust-chip hidden" id="wp-admin-chip" style="margin-top:14px;border-color:var(--gold);color:var(--gold);">
+        🔐 Gerçek Ad: <strong id="wp-admin-name" style="margin-left:4px;">—</strong>
+      </div>
+    </div>
+  </div>
+  <div class="container" style="padding:var(--s8) 0 var(--s12);">
+    <div class="jd-layout">
+      <div>
+        <div class="card mb6">
+          <div class="card-head"><h3 style="font-size:var(--fs-lg);font-weight:700;">Hakkında</h3></div>
+          <div class="card-body">
+            <p id="wp-bio" style="font-size:var(--fs-md);color:var(--dark-2);"></p>
+            <hr class="divider">
+            <div id="wp-skills" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="row-between">
+              <h3 style="font-size:var(--fs-lg);font-weight:700;">Değerlendirmeler</h3>
+              <span class="badge badge-sage" id="wp-rev-cnt">0 yorum</span>
+            </div>
+          </div>
+          <div id="wp-reviews"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="position:sticky;top:72px;">
+          <div class="card-body">
+            <div style="text-align:center;padding:var(--s4) 0;">
+              <div style="font-size:var(--fs-3xl);font-weight:900;color:var(--gold);line-height:1;" id="wp-rat-big">4.8</div>
+              <div style="color:var(--gold);font-size:22px;margin:4px 0;" id="wp-rat-stars">★★★★★</div>
+              <div style="font-size:var(--fs-sm);color:var(--muted);" id="wp-rat-cnt">— değerlendirme</div>
+            </div>
+            <hr class="divider">
+            <table class="sum-table" style="margin-bottom:var(--s5);">
+              <tr><td>📍 Konum</td><td id="wp-loc">—</td></tr>
+              <tr><td>✅ Tamamlanan</td><td id="wp-done">—</td></tr>
+              <tr><td>📅 Üye</td><td id="wp-since">—</td></tr>
+            </table>
+            <div class="priv-box" style="font-size:var(--fs-xs);padding:var(--s3) var(--s4);">
+              <span class="priv-icon" style="font-size:16px;">🔒</span>
+              <div>Gerçek isim ve iletişim bilgileri teklif kabulünden sonra açılır.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: KULLANICI DASHBOARD
+     ============================================================ -->
+<section id="view-dashboard-user" class="view">
+  <div class="pg-head"><div class="container"><h1 class="pg-title">Hesabım</h1></div></div>
+  <div class="container" style="padding-bottom:60px;">
+    <div class="dash-layout">
+      <div class="dash-side">
+        <div class="dash-uid" style="background:var(--green);">
+          <div class="dash-av" id="du-av" style="background:rgba(255,255,255,.2);color:#fff;">K</div>
+          <div class="dash-uid-name" id="du-name">Kullanıcı</div>
+          <div class="dash-uid-role">İş Sahibi</div>
+        </div>
+        <div class="dash-nav">
+          <button class="dnav-btn on" onclick="switchPanel('du-p-posts',this)" data-panel="du-p-posts"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 12h6M9 16h6M9 8h2"/></svg></span> İlanlarım</button>
+          <button class="dnav-btn"    onclick="switchPanel('du-p-offers',this)" data-panel="du-p-offers"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span> Gelen Teklifler</button>
+          <button class="dnav-btn"    onclick="switchPanel('du-p-demands',this)" data-panel="du-p-demands"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a1 1 0 0 0-1.6-.8L2 8Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg></span> Toptan Taleplerim</button>
+          <button class="dnav-btn"    onclick="switchPanel('du-p-profile',this)" data-panel="du-p-profile"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Profilim</button>
+          <hr style="border:none;border-top:1.5px solid rgba(44,36,22,.10);margin:8px 0;">
+          <button class="dnav-btn" style="color:var(--danger);" onclick="logout()"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Çıkış Yap</button>
+        </div>
+      </div>
+      <div>
+        <div class="dpanel on" id="du-p-posts">
+          <div class="row-between mb6">
+            <h2 style="font-size:var(--fs-xl);font-weight:800;">İlanlarım</h2>
+            <button class="btn btn-terra" onclick="showView('post-job')">+ Yeni İlan</button>
+          </div>
+          <div class="stat-cards">
+            <div class="stat-card"><div class="stat-num" id="du-s1">0</div><div class="stat-lbl">Toplam İlan</div></div>
+            <div class="stat-card"><div class="stat-num" id="du-s2">0</div><div class="stat-lbl">Gelen Teklif</div></div>
+            <div class="stat-card"><div class="stat-num" id="du-s3">0</div><div class="stat-lbl">Tamamlanan</div></div>
+          </div>
+          <div id="du-jobs"></div>
+        </div>
+        <div class="dpanel" id="du-p-offers">
+          <h2 style="font-size:var(--fs-xl);font-weight:800;margin-bottom:var(--s6);">Gelen Teklifler</h2>
+          <div id="du-offers"></div>
+        </div>
+        <div class="dpanel" id="du-p-demands">
+          <div class="row-between mb6">
+            <h2 style="font-size:var(--fs-xl);font-weight:800;">Toptan Taleplerim</h2>
+            <button class="btn btn-terra" onclick="showView('post-wholesale')">+ Yeni Talep</button>
+          </div>
+          <div id="du-demands"></div>
+        </div>
+        <div class="dpanel" id="du-p-profile">
+          <h2 style="font-size:var(--fs-xl);font-weight:800;margin-bottom:var(--s6);">Profil Bilgileri</h2>
+          <div class="card mb6"><div class="card-body">
+            <div class="fgrp"><label class="flabel">Rumuz (Anonim)</label>
+              <input type="text" class="fctrl" id="du-panon" readonly style="background:rgba(253,245,226,.7);font-weight:700;" /></div>
+            <div class="fgrp"><label class="flabel">Ad Soyad</label><input type="text" class="fctrl" id="du-pname" /></div>
+            <div class="fgrp"><label class="flabel">E-posta</label><input type="email" class="fctrl" id="du-pemail" readonly style="background:rgba(253,245,226,.7);" /></div>
+            <div class="two-col">
+              <div class="fgrp"><label class="flabel">Şehir</label><input type="text" class="fctrl" id="du-pcity" /></div>
+              <div class="fgrp"><label class="flabel">İlçe</label><input type="text" class="fctrl" id="du-pdist" /></div>
+            </div>
+            <button class="btn btn-primary" onclick="saveUserProfile()">Değişiklikleri Kaydet</button>
+          </div></div>
+          <div class="card">
+            <div class="card-head">
+              <div class="row-between">
+                <h3 style="font-size:var(--fs-lg);font-weight:700;">📍 Kayıtlı Adreslerim</h3>
+                <button class="btn btn-outline btn-sm" onclick="openAddressModal()">+ Yeni Adres</button>
+              </div>
+            </div>
+            <div class="card-body" id="du-addresses"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: USTA DASHBOARD
+     ============================================================ -->
+<section id="view-dashboard-worker" class="view">
+  <div class="pg-head"><div class="container"><h1 class="pg-title">Usta Paneli</h1></div></div>
+  <div class="container" style="padding-bottom:60px;">
+    <div class="dash-layout">
+      <div class="dash-side">
+        <div class="dash-uid" style="background:var(--dark);">
+          <div class="dash-av" id="dw-av" style="background:var(--gold);color:var(--dark);">U</div>
+          <div class="dash-uid-name" id="dw-name">Usta</div>
+          <div class="dash-uid-role">Hizmet Sağlayıcı</div>
+        </div>
+        <div class="dash-nav">
+          <button class="dnav-btn on" onclick="switchPanel('dw-p-stats',this)" data-panel="dw-p-stats"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> İstatistikler</button>
+          <button class="dnav-btn"    onclick="switchPanel('dw-p-offers',this)" data-panel="dw-p-offers"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></span> Tekliflerim</button>
+          <button class="dnav-btn"    onclick="switchPanel('dw-p-demands',this)" data-panel="dw-p-demands"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a1 1 0 0 0-1.6-.8L2 8Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg></span> Toptan Talepleri</button>
+          <button class="dnav-btn"    onclick="switchPanel('dw-p-products',this)" data-panel="dw-p-products"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> Ürünlerim</button>
+          <button class="dnav-btn"    onclick="switchPanel('dw-p-profile',this)" data-panel="dw-p-profile"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Profilim</button>
+          <hr style="border:none;border-top:1.5px solid rgba(44,36,22,.10);margin:8px 0;">
+          <button class="dnav-btn" style="color:var(--danger);" onclick="logout()"><span class="dicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Çıkış Yap</button>
+        </div>
+      </div>
+      <div>
+        <div class="dpanel on" id="dw-p-stats">
+          <div class="row-between mb6">
+            <h2 style="font-size:var(--fs-xl);font-weight:800;">İstatistiklerim</h2>
+            <span class="badge badge-gray">🔒 Sadece siz görürsünüz</span>
+          </div>
+          <div class="stat-cards">
+            <div class="stat-card"><div class="stat-num" id="dw-s1">0</div><div class="stat-lbl">Toplam Teklif</div></div>
+            <div class="stat-card"><div class="stat-num" id="dw-s2">0</div><div class="stat-lbl">Kabul Edildi</div></div>
+            <div class="stat-card"><div class="stat-num" id="dw-s3">0</div><div class="stat-lbl">Kabul Oranı</div></div>
+          </div>
+          <div class="stats-grid" id="dw-charts-wrap">
+            <div class="chart-card">
+              <h3>Teklif Durumu</h3>
+              <p class="chart-sub">Gönderdiğiniz tekliflerin sonucu</p>
+              <div class="chart-canvas-wrap"><canvas id="chart-offer-status"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <h3>Kategoriye Göre Teklifler</h3>
+              <p class="chart-sub">Hangi alanlarda daha aktifsiniz</p>
+              <div class="chart-canvas-wrap"><canvas id="chart-offer-cats"></canvas></div>
+            </div>
+          </div>
+          <div class="stats-empty hidden" id="dw-stats-empty">
+            <div class="empty-icon">📊</div>
+            <div class="empty-txt">Henüz veri yok</div>
+            <div class="empty-sub">Teklif vermeye başladığınızda istatistikleriniz burada görünecek.</div>
+          </div>
+        </div>
+        <div class="dpanel" id="dw-p-offers">
+          <h2 style="font-size:var(--fs-xl);font-weight:800;margin-bottom:var(--s6);">Gönderdiğim Teklifler</h2>
+          <div id="dw-offers"></div>
+        </div>
+        <div class="dpanel" id="dw-p-demands">
+          <div class="row-between mb6">
+            <h2 style="font-size:var(--fs-xl);font-weight:800;">Toptan Alım Talepleri</h2>
+            <button class="btn btn-outline btn-sm" onclick="showView('wholesale');wholesaleTab('dem')">Tümünü Gör</button>
+          </div>
+          <div class="toptan-grid" id="dw-demands"></div>
+        </div>
+        <div class="dpanel" id="dw-p-products">
+          <div class="row-between mb6">
+            <h2 style="font-size:var(--fs-xl);font-weight:800;">Ürünlerim</h2>
+            <button class="btn btn-terra" onclick="openAddProductModal()">+ Yeni Ürün Ekle</button>
+          </div>
+          <p style="color:var(--muted);margin-bottom:var(--s6);">Toptan Alım bölümünde listelenen, görselli ürünleriniz. Görselleri yalnızca ürün sahibi (siz) ekleyebilir.</p>
+          <div class="toptan-grid" id="dw-products"></div>
+        </div>
+        <div class="dpanel" id="dw-p-profile">
+          <h2 style="font-size:var(--fs-xl);font-weight:800;margin-bottom:var(--s6);">Usta Profilim</h2>
+          <div class="card mb6"><div class="card-body">
+            <div class="fgrp"><label class="flabel">Rumuz (Anonim)</label>
+              <input type="text" class="fctrl" id="dw-panon" readonly style="background:rgba(253,245,226,.7);font-weight:700;" /></div>
+            <div class="fgrp"><label class="flabel">Ad Soyad</label><input type="text" class="fctrl" id="dw-pname" /></div>
+            <div class="fgrp"><label class="flabel">Hakkımda / Deneyim</label><textarea class="fctrl" id="dw-pbio" rows="3"></textarea></div>
+            <div class="two-col">
+              <div class="fgrp"><label class="flabel">Şehir</label><input type="text" class="fctrl" id="dw-pcity" /></div>
+              <div class="fgrp"><label class="flabel">İlçe</label><input type="text" class="fctrl" id="dw-pdist" /></div>
+            </div>
+            <div class="fgrp"><label class="flabel">Uzmanlık Alanları</label>
+              <p class="fhint">Virgülle ayırın (Örn: Boya &amp; Badana, Elektrik)</p>
+              <input type="text" class="fctrl" id="dw-pskills" placeholder="Uzmanlıklarınız..." /></div>
+            <button class="btn btn-primary" onclick="saveWorkerProfile()">Değişiklikleri Kaydet</button>
+          </div></div>
+          <div class="card">
+            <div class="card-head">
+              <div class="row-between">
+                <h3 style="font-size:var(--fs-lg);font-weight:700;">📍 Kayıtlı Adreslerim</h3>
+                <button class="btn btn-outline btn-sm" onclick="openAddressModal()">+ Yeni Adres</button>
+              </div>
+            </div>
+            <div class="card-body" id="dw-addresses"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: MODERASYON PANELİ (Sprint 7)
+     Sadece site sahibi (isAdmin) ve Yetkili Usta (isTrustedWorker) erişebilir.
+     ============================================================ -->
+<section id="view-moderation" class="view">
+  <div class="pg-head">
+    <div class="container">
+      <h1 class="pg-title">🛡️ Moderasyon Paneli</h1>
+      <p class="pg-sub">Otomatik taramada işaretlenen ya da manuel bildirilen gönderiler burada listelenir. İşaretli gönderiler kaldırılana kadar yayında kalmaya devam eder.</p>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:60px;">
+    <div class="row-between mb6">
+      <div class="stat-cards" style="flex:1;">
+        <div class="stat-card"><div class="stat-num" id="mod-s-pending">0</div><div class="stat-lbl">Bekleyen İnceleme</div></div>
+        <div class="stat-card"><div class="stat-num" id="mod-s-resolved">0</div><div class="stat-lbl">Çözümlenen (Toplam)</div></div>
+        <div class="stat-card"><div class="stat-num" id="mod-s-auto">0</div><div class="stat-lbl">Otomatik Tespit</div></div>
+      </div>
+    </div>
+    <div class="auth-tabs mb6" style="max-width:360px;">
+      <button class="atab on" id="modtab-pending"  onclick="moderationTab('pending')">Bekleyenler</button>
+      <button class="atab"    id="modtab-resolved" onclick="moderationTab('resolved')">Geçmiş</button>
+    </div>
+    <div id="mod-list-pending"></div>
+    <div id="mod-list-resolved" class="hidden"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GÖRÜNÜM: YÖNETİCİ PANELİ (Sprint 8)
+     Sadece site sahibi (isAdmin) erişebilir — Yetkili Usta dahil değildir.
+     ============================================================ -->
+<section id="view-admin-panel" class="view">
+  <div class="pg-head">
+    <div class="container">
+      <h1 class="pg-title">🔐 Yönetici Paneli</h1>
+      <p class="pg-sub">Hesap yönetimi, gizlenen gönderiler ve denetim kaydı. Bu panel yalnızca site sahibine açıktır.</p>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:60px;">
+    <div class="auth-tabs mb6" style="max-width:460px;">
+      <button class="atab on" id="admintab-users"  onclick="adminTab('users')">Kullanıcılar</button>
+      <button class="atab"    id="admintab-hidden" onclick="adminTab('hidden')">Gizli Gönderiler</button>
+      <button class="atab"    id="admintab-audit"  onclick="adminTab('audit')">Denetim Kaydı</button>
+    </div>
+
+    <div id="admin-panel-users">
+      <p class="fhint mb4">Hesapları askıya alma, hesap sahibinin girişini anında engeller.</p>
+      <div id="admin-users-list"></div>
+    </div>
+
+    <div id="admin-panel-hidden" class="hidden">
+      <p class="fhint mb4">Buradaki gönderiler yalnızca size görünür — ilan/talep sahibi dahil kimse göremez.</p>
+      <div id="admin-hidden-list"></div>
+    </div>
+
+    <div id="admin-panel-audit" class="hidden">
+      <p class="fhint mb4">Gerçek kimlik görüntüleme, hesap askıya alma ve gönderi gizleme işlemlerinin tam kaydı.</p>
+      <div class="card"><div class="card-body" id="admin-audit-list"></div></div>
+    </div>
+  </div>
+</section>
+
+</main><!-- /main -->
+
+<!-- ================================================================
+     MODALLER
+     ================================================================ -->
+
+<!-- GİRİŞ / KAYIT -->
+<div class="overlay" id="m-auth" onclick="closeModal('m-auth',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title">Giriş Yap / Kayıt Ol</div>
+      <button class="modal-close" onclick="closeModal('m-auth')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <button class="atab on" onclick="authTab('login')">Giriş Yap</button>
+        <button class="atab"    onclick="authTab('register')">Kayıt Ol</button>
+      </div>
+      <!-- Giriş -->
+      <div class="aform on" id="af-login">
+        <div class="fgrp"><label class="flabel">E-posta</label>
+          <input type="email" class="fctrl" id="l-email" placeholder="ornek@email.com" /></div>
+        <div class="fgrp"><label class="flabel">Şifre</label>
+          <input type="password" class="fctrl" id="l-pass" placeholder="Şifreniz" /></div>
+        <button class="btn btn-primary btn-full" onclick="doLogin()">Giriş Yap</button>
+        <p style="text-align:center;margin-top:14px;color:var(--muted);font-size:var(--fs-sm);">
+          Hesabınız yok mu? <button onclick="authTab('register')" style="background:none;border:none;color:var(--green-dk);font-weight:700;cursor:pointer;font-size:inherit;font-family:var(--font);">Kayıt Ol</button>
+        </p>
+        <div style="background:rgba(232,200,96,.18);border:2px solid var(--gold);border-radius:var(--r);padding:var(--s4) var(--s5);margin-top:var(--s5);">
+          <div style="font-size:var(--fs-sm);font-weight:700;color:var(--dark);margin-bottom:var(--s2);">🔑 Demo Hesaplar (Prototip)</div>
+          <div style="font-size:var(--fs-sm);color:var(--dark-2);line-height:2.2;">
+            <strong>İş Sahibi:</strong> kullanici@test.com / 123456<br>
+            <strong>Usta:</strong> usta@test.com / 123456
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="demoFill('kullanici@test.com','123456')">İş Sahibi Girişi</button>
+            <button class="btn btn-outline btn-sm" onclick="demoFill('usta@test.com','123456')">Usta Girişi</button>
+          </div>
+        </div>
+      </div>
+      <!-- Kayıt -->
+      <div class="aform" id="af-reg">
+        <div class="fgrp"><label class="flabel">Ad Soyad</label>
+          <input type="text" class="fctrl" id="r-name" placeholder="Adınız ve soyadınız" /></div>
+        <div class="fgrp"><label class="flabel">E-posta</label>
+          <input type="email" class="fctrl" id="r-email" placeholder="ornek@email.com" /></div>
+        <div class="fgrp"><label class="flabel">Şifre</label>
+          <input type="password" class="fctrl" id="r-pass" placeholder="En az 6 karakter" /></div>
+        <div class="fgrp"><label class="flabel">Hesap Türü</label>
+          <select class="fctrl" id="r-role">
+            <option value="user">İş Sahibi — İlan vereceğim</option>
+            <option value="worker">Usta — Teklif vereceğim</option>
+            <option value="both">Her İkisi</option>
+          </select></div>
+        <div class="two-col">
+          <div class="fgrp"><label class="flabel">Şehir</label>
+            <select class="fctrl" id="r-city" onchange="fillDistricts('r-city','r-dist')">
+              <option value="">Şehir seçin</option></select></div>
+          <div class="fgrp"><label class="flabel">İlçe</label>
+            <select class="fctrl" id="r-dist" disabled><option value="">Önce şehir seçin</option></select></div>
+        </div>
+        <button class="btn btn-terra btn-full" onclick="doRegister()">Kayıt Ol</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEKLİF VER (İŞ İLANI) -->
+<div class="overlay" id="m-offer" onclick="closeModal('m-offer',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title">Teklif Ver</div>
+      <button class="modal-close" onclick="closeModal('m-offer')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--muted);margin-bottom:var(--s5);">Teklifiniz rumuzunuzla iletilecek. Kabul edilene kadar kimliğiniz gizli kalır.</p>
+      <div class="fgrp"><label class="flabel">Teklif Tutarı (TL)</label>
+        <p class="fhint">İşin toplam bedelini girin.</p>
+        <input type="number" class="fctrl" id="o-price" placeholder="Örn: 4500" min="1" /></div>
+      <div class="fgrp"><label class="flabel">Teklif Açıklaması</label>
+        <p class="fhint">Deneyiminizi, kullanacağınız malzemeyi ve özel notlarınızı yazın.</p>
+        <textarea class="fctrl" id="o-desc" rows="4" placeholder="Örn: Bu alanda 10 yıllık deneyimim var, kaliteli malzeme kullanırım..."></textarea></div>
+      <div class="fgrp"><label class="flabel">Tahmini Süre</label>
+        <input type="text" class="fctrl" id="o-dur" placeholder="Örn: 1-2 gün, 3-4 saat" /></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost"        onclick="closeModal('m-offer')">İptal</button>
+      <button class="btn btn-primary btn-lg" onclick="submitOffer()">Teklifi Gönder</button>
+    </div>
+  </div>
+</div>
+
+<!-- KARŞI TEKLİF (Sprint 6 — pazarlık) -->
+<div class="overlay" id="m-counter" onclick="closeModal('m-counter',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title">Karşı Teklif Ver</div>
+      <button class="modal-close" onclick="closeModal('m-counter')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box mb4" id="co-context">Son teklif: —</div>
+      <div class="fgrp"><label class="flabel">Yeni Fiyat (TL)</label>
+        <input type="number" class="fctrl" id="co-price" placeholder="Örn: 6800" min="1" /></div>
+      <div class="fgrp"><label class="flabel">Not (İsteğe Bağlı)</label>
+        <p class="fhint">Kısaca gerekçenizi belirtebilirsiniz.</p>
+        <textarea class="fctrl" id="co-note" rows="3" placeholder="Örn: Bu fiyata anlaşabilir miyiz?"></textarea></div>
+      <p class="fhint" id="co-round-info"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost"        onclick="closeModal('m-counter')">İptal</button>
+      <button class="btn btn-primary btn-lg" onclick="submitCounter()">Karşı Teklifi Gönder</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEKLİF VER (TOPTAN TALEP) -->
+<div class="overlay" id="m-demand-offer" onclick="closeModal('m-demand-offer',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title">Talebe Teklif Ver</div>
+      <button class="modal-close" onclick="closeModal('m-demand-offer')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--muted);margin-bottom:var(--s5);">Teklifiniz rumuzunuzla iletilecek.</p>
+      <div class="fgrp"><label class="flabel">Birim Fiyat (TL)</label>
+        <input type="number" class="fctrl" id="do-unit-price" placeholder="Örn: 95" min="1" /></div>
+      <div class="fgrp"><label class="flabel">Toplam Fiyat (TL)</label>
+        <input type="number" class="fctrl" id="do-total-price" placeholder="Örn: 9500" min="1" /></div>
+      <div class="fgrp hidden" id="do-shipping-wrap">
+        <label class="flabel">Kargo / Nakliye Ücreti (TL)</label>
+        <p class="fhint">Alıcı "adresime gönderilsin" seçtiği için kargo ücretini belirtmelisiniz.</p>
+        <input type="number" class="fctrl" id="do-shipping" placeholder="Örn: 350" min="0" /></div>
+      <div class="fgrp"><label class="flabel">Açıklama</label>
+        <textarea class="fctrl" id="do-desc" rows="3" placeholder="Stok durumu, teslimat süresi gibi bilgiler..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost"        onclick="closeModal('m-demand-offer')">İptal</button>
+      <button class="btn btn-primary btn-lg" onclick="submitDemandOffer()">Teklifi Gönder</button>
+    </div>
+  </div>
+</div>
+
+<!-- ÜRÜN DETAY -->
+<div class="overlay" id="m-prod" onclick="closeModal('m-prod',event)">
+  <div class="modal" style="max-width:600px;" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title" id="prod-title">Ürün</div>
+      <button class="modal-close" onclick="closeModal('m-prod')">✕</button>
+    </div>
+    <div class="modal-body" id="prod-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('m-prod')">Kapat</button>
+      <button class="btn btn-primary btn-lg" onclick="toast('Sipariş fonksiyonu Sprint 5\'te eklenecek!','nfo')">Sipariş Ver (Yakında)</button>
+    </div>
+  </div>
+</div>
+
+<!-- YENİ ÜRÜN EKLE (yalnızca satıcı/usta hesapları) -->
+<div class="overlay" id="m-add-product" onclick="closeModal('m-add-product',event)">
+  <div class="modal" style="max-width:560px;" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title">Yeni Ürün Ekle</div>
+      <button class="modal-close" onclick="closeModal('m-add-product')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fgrp">
+        <label class="flabel">Ürün Görseli</label>
+        <p class="fhint">Bu ürünün fotoğrafını yükleyin. Yalnızca siz (ürün sahibi) görsel ekleyebilirsiniz.</p>
+        <!-- ÜRÜN RESMİ BURAYA YÜKLENİR: seçilen dosya tarayıcıda base64'e çevrilip
+             localStorage'daki ürün kaydına "image" alanı olarak yazılır. -->
+        <div class="img-upload-box" id="ap-upload-box" onclick="document.getElementById('ap-image-input').click()">
+          <div class="iu-icon">📷</div>
+          <div class="iu-text">Görsel seçmek için tıklayın</div>
+          <div class="iu-hint">JPG, PNG — önerilen: 4:3 oran</div>
+        </div>
+        <input type="file" id="ap-image-input" accept="image/*" class="hidden" onchange="handleProductImageUpload(event)" />
+        <div class="img-preview-wrap" id="ap-preview-wrap">
+          <img class="img-preview" id="ap-preview-img" src="" alt="Ürün görseli önizleme" />
+          <button type="button" class="img-preview-remove" onclick="removeProductImage(event)">✕</button>
+        </div>
+      </div>
+      <div class="fgrp">
+        <label class="flabel">Ürün Adı</label>
+        <input type="text" class="fctrl" id="ap-name" placeholder="Örn: Marshall İç Cephe Boyası" />
+      </div>
+      <div class="two-col">
+        <div class="fgrp">
+          <label class="flabel">Kategori</label>
+          <select class="fctrl" id="ap-cat"></select>
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Marka</label>
+          <input type="text" class="fctrl" id="ap-brand" placeholder="Örn: Marshall" />
+        </div>
+      </div>
+      <div class="fgrp">
+        <label class="flabel">Açıklama</label>
+        <textarea class="fctrl" id="ap-desc" rows="3" placeholder="Ürünün özellikleri, kapasitesi vb."></textarea>
+      </div>
+      <div class="two-col">
+        <div class="fgrp">
+          <label class="flabel">Fiyat (TL)</label>
+          <input type="number" class="fctrl" id="ap-price" placeholder="Örn: 780" min="1" />
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Birim</label>
+          <input type="text" class="fctrl" id="ap-unit" placeholder="Örn: teneke (15L)" />
+        </div>
+      </div>
+      <div class="fgrp">
+        <label class="flabel">Minimum Sipariş Adedi</label>
+        <input type="number" class="fctrl" id="ap-min" placeholder="Örn: 10" min="1" />
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('m-add-product')">İptal</button>
+      <button class="btn btn-primary btn-lg" onclick="submitProduct()">Ürünü Yayınla</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADRES EKLE (kayıtlı adresler — Sprint 5) -->
+<div class="overlay" id="m-address" onclick="closeModal('m-address',event)">
+  <div class="modal" style="max-width:480px;" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title">Yeni Adres Ekle</div>
+      <button class="modal-close" onclick="closeModal('m-address')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fgrp">
+        <label class="flabel">Adres Etiketi</label>
+        <input type="text" class="fctrl" id="am-label" placeholder="Örn: Ev, İş" />
+      </div>
+      <div class="two-col">
+        <div class="fgrp">
+          <label class="flabel">Şehir</label>
+          <select class="fctrl" id="am-city" onchange="fillDistricts('am-city','am-dist')">
+            <option value="">Şehir Seçin</option>
+          </select>
+        </div>
+        <div class="fgrp">
+          <label class="flabel">İlçe</label>
+          <select class="fctrl" id="am-dist" disabled><option value="">Önce şehir seçin</option></select>
+        </div>
+      </div>
+      <div class="fgrp">
+        <label class="flabel">Tam Adres</label>
+        <textarea class="fctrl" id="am-addr" rows="2" placeholder="Mahalle, sokak, kapı no..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('m-address')">İptal</button>
+      <button class="btn btn-primary btn-lg" onclick="submitAddressForm()">Adresi Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- GÖNDERİYİ BİLDİR (Sprint 7 — sadece yönetici / yetkili usta görür) -->
+<div class="overlay" id="m-report" onclick="closeModal('m-report',event)">
+  <div class="modal" style="max-width:480px;" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title">Gönderiyi İşaretle</div>
+      <button class="modal-close" onclick="closeModal('m-report')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="fhint mb4">Bu gönderi yayından kaldırılmaz, moderasyon kuyruğuna eklenir ve incelenir.</p>
+      <div class="fgrp">
+        <label class="flabel">Not (İsteğe Bağlı)</label>
+        <textarea class="fctrl" id="rp-note" rows="3" placeholder="Neden işaretlediğinizi kısaca belirtin..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('m-report')">İptal</button>
+      <button class="btn btn-danger btn-lg" onclick="submitReport()">🚩 İşaretle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     FOOTER
+     ================================================================ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <span style="font-size:26px;">🔨</span>
+          <span style="font-size:var(--fs-xl);font-weight:800;color:#fff;">Usta<span style="color:var(--gold);">Bul</span></span>
+        </div>
+        <p>Türkiye'nin güvenilir usta ve hizmet platformu. İş sahibi ile ustayı güvenle buluşturuyoruz.</p>
+      </div>
+      <div class="foot-col"><h3>Hizmetler</h3>
+        <div class="foot-links">
+          <a href="#" onclick="showView('browse');return false;">İş İlanları</a>
+          <a href="#" onclick="showView('wholesale');return false;">Toptan Alım</a>
+          <a href="#" onclick="requireLogin('post-job');return false;">İlan Ver</a>
+        </div>
+      </div>
+      <div class="foot-col"><h3>Hesap</h3>
+        <div class="foot-links">
+          <a href="#" onclick="openModal('m-auth');return false;">Giriş Yap</a>
+          <a href="#" onclick="authTab('register');openModal('m-auth');return false;">Kayıt Ol</a>
+          <a href="#" onclick="showDash();return false;">Panelim</a>
+        </div>
+      </div>
+      <div class="foot-col"><h3>Yardım</h3>
+        <div class="foot-links">
+          <a href="#">Nasıl Çalışır?</a>
+          <a href="#">S.S.S.</a>
+          <a href="#">İletişim</a>
+          <a href="#">Gizlilik Politikası</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2025 UstaBul. Tüm hakları saklıdır.</span>
+      <span>🇹🇷 Türkiye</span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast-wrap"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
