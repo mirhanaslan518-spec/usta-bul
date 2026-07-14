@@ -25,3 +25,4 @@ jobs:
             -H "Prefer: return=minimal" \
             -d '{}'
           echo "Ping gönderildi: $(date -u)"
+
