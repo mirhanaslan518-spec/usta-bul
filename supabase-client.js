@@ -75,8 +75,20 @@ async function sbSignUp({ email, password, name, role, city, district }) {
    ---------------------------------------------------------------- */
 async function sbSignIn({ email, password }) {
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  const profile = await sbFetchOwnProfile(data.user.id);
+  if (error) throw error; // gerçek kimlik doğrulama hatası (yanlış e-posta/şifre, vb.)
+
+  let profile;
+  try {
+    profile = await sbFetchOwnProfile(data.user.id);
+  } catch (profileErr) {
+    // Buraya düşmesinin en olası nedeni: bu hesap Supabase Dashboard'dan
+    // (Authentication → Users → Add user) elle oluşturuldu ve app'in kayıt
+    // formundan geçmedi — yani auth.users'ta var ama profiles'ta karşılığı
+    // yok. Kimlik doğrulaması AŞILDI (şifre doğru), sorun profilde.
+    await sb.auth.signOut();
+    throw new Error('NO_PROFILE');
+  }
+
   if (profile?.suspended) {
     await sb.auth.signOut();
     throw new Error('SUSPENDED');
