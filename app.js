@@ -2113,10 +2113,17 @@ async function doLogin() {
     toast(`Hoş geldiniz, ${profile.name.split(' ')[0]}! 👋`,'ok');
     showView(profile.role==='worker'?'dashboard-worker':'dashboard-user');
   } catch (err) {
+    console.error('Giriş hatası:', err);
     if (err.message === 'SUSPENDED') {
       toast('Bu hesap askıya alınmış. Destek ekibiyle iletişime geçin.','er');
-    } else {
+    } else if (err.message === 'NO_PROFILE') {
+      toast('Bu hesap Supabase\'de bulundu ama profil kaydı yok. Muhtemelen Dashboard\'dan elle eklendi — bu sitedeki Kayıt Ol formundan tekrar oluşturun.','er');
+    } else if ((err.message||'').toLowerCase().includes('invalid login credentials')) {
       toast('E-posta veya şifre hatalı','er');
+    } else if ((err.message||'').toLowerCase().includes('email not confirmed')) {
+      toast('E-posta onaylanmamış. Supabase → Authentication → Providers → Email → "Confirm email" kapatılmalı.','er');
+    } else {
+      toast('Giriş başarısız: ' + (err.message||'bilinmeyen hata'),'er');
     }
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Giriş Yap'; }
